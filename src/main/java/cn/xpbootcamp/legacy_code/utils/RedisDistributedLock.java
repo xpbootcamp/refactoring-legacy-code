@@ -3,6 +3,8 @@ package cn.xpbootcamp.legacy_code.utils;
 public class RedisDistributedLock {
     private static final RedisDistributedLock INSTANCE = new RedisDistributedLock();
 
+    private RedisDistributedLock(){}
+
     public static RedisDistributedLock getSingletonInstance() {
         return INSTANCE;
     }
