@@ -19,17 +19,12 @@ class WalletTransactionTest {
         long sellerId = 2L;
         double amount = 500.0;
 
-        WalletTransaction walletTransaction = new WalletTransaction("sjyuan123", buyerId, sellerId, amount);
-        WalletService walletService = mock(WalletServiceImpl.class);
-        String updatedPreAssignedId = "t_sjyuan123";
-        when(walletService.moveMoney(updatedPreAssignedId, buyerId, sellerId, amount)).thenReturn("123");
+        TestFixture testFixture = new TestFixture(buyerId, sellerId, amount, true).invoke();
 
-
-        RedisDistributedLock redisDistributedLock = mock(RedisDistributedLock.class);
-        when(redisDistributedLock.lock(updatedPreAssignedId)).thenReturn(true);
-
-        walletTransaction.setWalletService(walletService);
-        walletTransaction.setRedisDistributedLock(redisDistributedLock);
+        WalletTransaction walletTransaction = testFixture.getWalletTransaction();
+        WalletService walletService = testFixture.getWalletService();
+        String updatedPreAssignedId = testFixture.getUpdatedPreAssignedId();
+        RedisDistributedLock redisDistributedLock = testFixture.getRedisDistributedLock();
 
         walletTransaction.execute();
 
@@ -65,17 +60,12 @@ class WalletTransactionTest {
         long sellerId = 2L;
         double amount = 500.0;
 
-        WalletTransaction walletTransaction = new WalletTransaction("sjyuan123", buyerId, sellerId, amount);
-        WalletService walletService = mock(WalletServiceImpl.class);
-        String updatedPreAssignedId = "t_sjyuan123";
-        when(walletService.moveMoney(updatedPreAssignedId, buyerId, sellerId, amount)).thenReturn("123");
+        TestFixture testFixture = new TestFixture(buyerId, sellerId, amount, true).invoke();
 
-
-        RedisDistributedLock redisDistributedLock = mock(RedisDistributedLock.class);
-        when(redisDistributedLock.lock(updatedPreAssignedId)).thenReturn(true);
-
-        walletTransaction.setWalletService(walletService);
-        walletTransaction.setRedisDistributedLock(redisDistributedLock);
+        WalletTransaction walletTransaction = testFixture.getWalletTransaction();
+        WalletService walletService = testFixture.getWalletService();
+        String updatedPreAssignedId = testFixture.getUpdatedPreAssignedId();
+        RedisDistributedLock redisDistributedLock = testFixture.getRedisDistributedLock();
 
         walletTransaction.execute();
 
@@ -91,18 +81,12 @@ class WalletTransactionTest {
         long sellerId = 2L;
         double amount = 500.0;
 
-        WalletTransaction walletTransaction = new WalletTransaction("sjyuan123", buyerId, sellerId, amount);
-        WalletService walletService = mock(WalletServiceImpl.class);
-        String updatedPreAssignedId = "t_sjyuan123";
-        when(walletService.moveMoney(updatedPreAssignedId, buyerId, sellerId, amount)).thenReturn(null);
+        TestFixture generate = new TestFixture(buyerId, sellerId, amount, false).invoke();
 
-
-        RedisDistributedLock redisDistributedLock = mock(RedisDistributedLock.class);
-        when(redisDistributedLock.lock(updatedPreAssignedId)).thenReturn(true);
-
-        walletTransaction.setWalletService(walletService);
-        walletTransaction.setRedisDistributedLock(redisDistributedLock);
-
+        WalletTransaction walletTransaction = generate.getWalletTransaction();
+        WalletService walletService = generate.getWalletService();
+        String updatedPreAssignedId = generate.getUpdatedPreAssignedId();
+        RedisDistributedLock redisDistributedLock = generate.getRedisDistributedLock();
         walletTransaction.execute();
 
         assertTrue(walletTransaction.isStatusFailed());
@@ -123,4 +107,52 @@ class WalletTransactionTest {
     }
 
 
+    private class TestFixture {
+        private long buyerId;
+        private long sellerId;
+        private double amount;
+        private boolean moveStatus;
+        private WalletTransaction walletTransaction;
+        private WalletService walletService;
+        private String updatedPreAssignedId;
+        private RedisDistributedLock redisDistributedLock;
+
+        public TestFixture(long buyerId, long sellerId, double amount, boolean moveStatus) {
+            this.buyerId = buyerId;
+            this.sellerId = sellerId;
+            this.amount = amount;
+            this.moveStatus = moveStatus;
+        }
+
+        public WalletTransaction getWalletTransaction() {
+            return walletTransaction;
+        }
+
+        public WalletService getWalletService() {
+            return walletService;
+        }
+
+        public String getUpdatedPreAssignedId() {
+            return updatedPreAssignedId;
+        }
+
+        public RedisDistributedLock getRedisDistributedLock() {
+            return redisDistributedLock;
+        }
+
+        public TestFixture invoke() {
+            walletTransaction = new WalletTransaction("sjyuan123", buyerId, sellerId, amount);
+            walletService = mock(WalletServiceImpl.class);
+            updatedPreAssignedId = "t_sjyuan123";
+            when(walletService.moveMoney(updatedPreAssignedId, buyerId, sellerId, amount)).thenReturn(moveStatus ? "123" : null);
+
+
+            redisDistributedLock = mock(RedisDistributedLock.class);
+            when(redisDistributedLock.lock(updatedPreAssignedId)).thenReturn(true);
+
+            walletTransaction.setWalletService(walletService);
+            walletTransaction.setRedisDistributedLock(redisDistributedLock);
+            return this;
+        }
+    }
 }
