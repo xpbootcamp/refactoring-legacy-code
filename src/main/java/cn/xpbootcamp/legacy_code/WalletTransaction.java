@@ -58,9 +58,8 @@ public class WalletTransaction {
                 return false;
             }
             if (status == STATUS.EXECUTED) return true; // double check
-            long executionInvokedTimestamp = System.currentTimeMillis();
             // 交易超过20天
-            if (executionInvokedTimestamp - createdTimestamp > 1728000000) {
+            if (isExpired()) {
                 this.status = STATUS.EXPIRED;
                 return false;
             }
@@ -80,7 +79,16 @@ public class WalletTransaction {
         }
     }
 
-    public boolean isSuccessful() {
+    boolean isExpired() {
+        long executionInvokedTimestamp = System.currentTimeMillis();
+        return executionInvokedTimestamp - createdTimestamp > 1728000000;
+    }
+
+    public boolean isStatusSuccessful() {
         return status == STATUS.EXECUTED;
+    }
+
+    public boolean isStatusExpired() {
+        return status == STATUS.EXPIRED;
     }
 }
