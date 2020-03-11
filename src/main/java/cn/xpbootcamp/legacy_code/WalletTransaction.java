@@ -91,4 +91,8 @@ public class WalletTransaction {
     public boolean isStatusExpired() {
         return status == STATUS.EXPIRED;
     }
+
+    public boolean isStatusFailed() {
+        return status == STATUS.FAILED;
+    }
 }
