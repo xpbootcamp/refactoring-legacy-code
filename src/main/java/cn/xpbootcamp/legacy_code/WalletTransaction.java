@@ -12,8 +12,6 @@ public class WalletTransaction {
     private String id;
     private Long buyerId;
     private Long sellerId;
-    private Long productId;
-    private String orderId;
     private Long createdTimestamp;
     private Double amount;
     private STATUS status;
@@ -27,23 +25,6 @@ public class WalletTransaction {
 
     public void setWalletService(WalletService walletService) {
         this.walletService = walletService;
-    }
-
-    public WalletTransaction(String preAssignedId, Long buyerId, Long sellerId, Long productId, String orderId) {
-        if (preAssignedId != null && !preAssignedId.isEmpty()) {
-            this.id = preAssignedId;
-        } else {
-            this.id = IdGenerator.generateTransactionId();
-        }
-        if (!this.id.startsWith("t_")) {
-            this.id = "t_" + preAssignedId;
-        }
-        this.buyerId = buyerId;
-        this.sellerId = sellerId;
-        this.productId = productId;
-        this.orderId = orderId;
-        this.status = STATUS.TO_BE_EXECUTED;
-        this.createdTimestamp = System.currentTimeMillis();
     }
 
     public WalletTransaction(String preAssignedId, Long buyerId, Long sellerId, Double amount) {

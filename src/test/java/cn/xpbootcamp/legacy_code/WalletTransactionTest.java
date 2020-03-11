@@ -14,13 +14,18 @@ class WalletTransactionTest {
 
     @Test
     void should_execute_successfully() throws InvalidTransactionException {
-        WalletTransaction walletTransaction = new WalletTransaction("sjyuan123", 1L, 2L, 500.0);
+        long buyerId = 1L;
+        long sellerId = 2L;
+        double amount = 500.0;
+
+        WalletTransaction walletTransaction = new WalletTransaction("sjyuan123", buyerId, sellerId, amount);
         WalletService walletService = mock(WalletServiceImpl.class);
-        when(walletService.moveMoney("t_sjyuan123", 1L, 2L, 500.0)).thenReturn("123");
+        String updatedPreAssignedId = "t_sjyuan123";
+        when(walletService.moveMoney(updatedPreAssignedId, buyerId, sellerId, amount)).thenReturn("123");
 
 
         RedisDistributedLock redisDistributedLock = mock(RedisDistributedLock.class);
-        when(redisDistributedLock.lock("t_sjyuan123")).thenReturn(true);
+        when(redisDistributedLock.lock(updatedPreAssignedId)).thenReturn(true);
 
         walletTransaction.setWalletService(walletService);
         walletTransaction.setRedisDistributedLock(redisDistributedLock);
@@ -28,8 +33,8 @@ class WalletTransactionTest {
         walletTransaction.execute();
 
         assertTrue(walletTransaction.isSuccessful());
-        verify(walletService, times(1)).moveMoney("t_sjyuan123", 1L, 2L, 500.0);
-        verify(redisDistributedLock, times(1)).lock("t_sjyuan123");
+        verify(walletService, times(1)).moveMoney(updatedPreAssignedId, buyerId, sellerId, amount);
+        verify(redisDistributedLock, times(1)).lock(updatedPreAssignedId);
     }
 
 }
