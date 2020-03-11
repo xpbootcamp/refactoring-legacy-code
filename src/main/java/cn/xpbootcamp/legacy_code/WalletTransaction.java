@@ -27,6 +27,15 @@ public class WalletTransaction {
     }
 
     public WalletTransaction(String preAssignedId, Long buyerId, Long sellerId, Double amount) {
+        handleAssignedId(preAssignedId);
+        this.buyerId = buyerId;
+        this.sellerId = sellerId;
+        this.amount = amount;
+        this.status = STATUS.TO_BE_EXECUTED;
+        this.createdTimestamp = System.currentTimeMillis();
+    }
+
+    private void handleAssignedId(String preAssignedId) {
         if (preAssignedId != null && !preAssignedId.isEmpty()) {
             this.id = preAssignedId;
         } else {
@@ -35,11 +44,6 @@ public class WalletTransaction {
         if (!this.id.startsWith("t_")) {
             this.id = "t_" + preAssignedId;
         }
-        this.buyerId = buyerId;
-        this.sellerId = sellerId;
-        this.amount = amount;
-        this.status = STATUS.TO_BE_EXECUTED;
-        this.createdTimestamp = System.currentTimeMillis();
     }
 
 
@@ -51,13 +55,12 @@ public class WalletTransaction {
         boolean isLocked = false;
         try {
             isLocked = redisDistributedLock.lock(id);
-
-            // 锁定未成功，返回false
             if (!isLocked) {
                 return false;
             }
-            if (status == STATUS.EXECUTED) return true; // double check
-            // 交易超过20天
+            if (status == STATUS.EXECUTED) {
+                return true;
+            }
             if (isExpired()) {
                 this.status = STATUS.EXPIRED;
                 return false;
@@ -67,10 +70,9 @@ public class WalletTransaction {
                 this.walletTransactionId = walletTransactionId;
                 this.status = STATUS.EXECUTED;
                 return true;
-            } else {
-                this.status = STATUS.FAILED;
-                return false;
             }
+            this.status = STATUS.FAILED;
+            return false;
         } finally {
             if (isLocked) {
                 redisDistributedLock.unlock(id);
@@ -79,6 +81,8 @@ public class WalletTransaction {
     }
 
     boolean isExpired() {
+        // 交易超过20天
+        // How to refactoring this with test?
         long executionInvokedTimestamp = System.currentTimeMillis();
         return executionInvokedTimestamp - createdTimestamp > 1728000000;
     }
