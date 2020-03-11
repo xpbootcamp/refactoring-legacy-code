@@ -2,7 +2,6 @@ package cn.xpbootcamp.legacy_code;
 
 import cn.xpbootcamp.legacy_code.enums.STATUS;
 import cn.xpbootcamp.legacy_code.service.WalletService;
-import cn.xpbootcamp.legacy_code.service.WalletServiceImpl;
 import cn.xpbootcamp.legacy_code.utils.IdGenerator;
 import cn.xpbootcamp.legacy_code.utils.RedisDistributedLock;
 

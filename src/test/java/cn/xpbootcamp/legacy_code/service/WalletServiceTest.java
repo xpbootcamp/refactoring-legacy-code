@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class WalletServiceImplTest {
+class WalletServiceTest {
     @Test
     void should_move_money_correctly() {
         UserRepositoryImpl userRepository = mock(UserRepositoryImpl.class);
@@ -21,7 +21,7 @@ class WalletServiceImplTest {
         User seller = new User();
         seller.setBalance(200);
         when(userRepository.find(sellerId)).thenReturn(seller);
-        WalletService walletService = new WalletServiceImpl(userRepository);
+        WalletService walletService = new WalletService(userRepository);
 
         String id = walletService.moveMoney("123", buyerId, sellerId, 150);
 
@@ -42,7 +42,7 @@ class WalletServiceImplTest {
         User seller = new User();
         seller.setBalance(200);
         when(userRepository.find(sellerId)).thenReturn(seller);
-        WalletService walletService = new WalletServiceImpl(userRepository);
+        WalletService walletService = new WalletService(userRepository);
 
         String id = walletService.moveMoney("123", buyerId, sellerId, 300);
 

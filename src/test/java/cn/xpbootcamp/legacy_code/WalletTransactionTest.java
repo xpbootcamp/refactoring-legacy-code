@@ -1,7 +1,6 @@
 package cn.xpbootcamp.legacy_code;
 
 import cn.xpbootcamp.legacy_code.service.WalletService;
-import cn.xpbootcamp.legacy_code.service.WalletServiceImpl;
 import cn.xpbootcamp.legacy_code.utils.RedisDistributedLock;
 import org.junit.jupiter.api.Test;
 
@@ -142,7 +141,7 @@ class WalletTransactionTest {
 
         public TestFixture invoke() {
             walletTransaction = new WalletTransaction("sjyuan123", buyerId, sellerId, amount);
-            walletService = mock(WalletServiceImpl.class);
+            walletService = mock(WalletService.class);
             updatedPreAssignedId = "t_sjyuan123";
             when(walletService.moveMoney(updatedPreAssignedId, buyerId, sellerId, amount)).thenReturn(moveStatus ? "123" : null);
 
