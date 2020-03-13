@@ -1,8 +1,10 @@
 package cn.xpbootcamp.legacy_code;
 
 import cn.xpbootcamp.legacy_code.enums.STATUS;
+import cn.xpbootcamp.legacy_code.service.WalletService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import javax.transaction.InvalidTransactionException;
 
@@ -60,6 +62,30 @@ class WalletTransactionExecuteTest {
 
         assertFalse(walletTransaction.execute());
         assertEquals(STATUS.EXPIRED, walletTransaction.getStatus());
+    }
+
+    @Test
+    void should_return_true_if_moved_money() throws InvalidTransactionException {
+        MockWalletTransaction walletTransaction = new MockWalletTransaction("something", 1L, 1L, 1d);
+        walletTransaction.setLocked(true);
+        WalletService walletService = Mockito.mock(WalletService.class);
+        Mockito.when(walletService.moveMoney("t_something", 1L, 1L, 1d)).thenReturn("result");
+        walletTransaction.setWalletService(walletService);
+
+        assertTrue(walletTransaction.execute());
+        assertEquals(STATUS.EXECUTED, walletTransaction.getStatus());
+    }
+
+    @Test
+    void should_return_true_if_move_money_failed() throws InvalidTransactionException {
+        MockWalletTransaction walletTransaction = new MockWalletTransaction("something", 1L, 1L, 1d);
+        walletTransaction.setLocked(true);
+        WalletService walletService = Mockito.mock(WalletService.class);
+        Mockito.when(walletService.moveMoney("t_something", 1L, 1L, 1d)).thenReturn(null);
+        walletTransaction.setWalletService(walletService);
+
+        assertFalse(walletTransaction.execute());
+        assertEquals(STATUS.FAILED, walletTransaction.getStatus());
     }
 
     private class MockWalletTransaction extends WalletTransaction{
