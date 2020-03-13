@@ -12,15 +12,11 @@ public class WalletTransaction {
     private String id;
     private Long buyerId;
     private Long sellerId;
-    private Long productId;
-    private String orderId;
     private Long createdTimestamp;
     private Double amount;
     private STATUS status;
-    private String walletTransactionId;
 
-
-    public WalletTransaction(String preAssignedId, Long buyerId, Long sellerId, Long productId, String orderId) {
+    public WalletTransaction(String preAssignedId, Long buyerId, Long sellerId, Double amount) {
         if (preAssignedId != null && !preAssignedId.isEmpty()) {
             this.id = preAssignedId;
         } else {
@@ -31,8 +27,7 @@ public class WalletTransaction {
         }
         this.buyerId = buyerId;
         this.sellerId = sellerId;
-        this.productId = productId;
-        this.orderId = orderId;
+        this.amount = amount;
         this.status = STATUS.TO_BE_EXECUTED;
         this.createdTimestamp = System.currentTimeMillis();
     }
@@ -60,7 +55,6 @@ public class WalletTransaction {
             WalletService walletService = new WalletServiceImpl();
             String walletTransactionId = walletService.moveMoney(id, buyerId, sellerId, amount);
             if (walletTransactionId != null) {
-                this.walletTransactionId = walletTransactionId;
                 this.status = STATUS.EXECUTED;
                 return true;
             } else {

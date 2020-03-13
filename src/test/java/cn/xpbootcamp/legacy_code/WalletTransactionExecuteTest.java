@@ -12,7 +12,7 @@ class WalletTransactionExecuteTest {
 
     @Test
     void assert_exception_when_buyId_is_null() {
-        WalletTransaction walletTransaction = new WalletTransaction("something", null, 1L, 1L, "someId");
+        WalletTransaction walletTransaction = new WalletTransaction("something", null, 1L, 1d);
         Assertions.assertThrows(InvalidTransactionException.class, () -> {
             walletTransaction.execute();
         }, "This is an invalid transaction");
@@ -20,17 +20,15 @@ class WalletTransactionExecuteTest {
 
     @Test
     void assert_exception_when_sellerId_is_null() {
-        WalletTransaction walletTransaction = new WalletTransaction("something", 1L, null, 1L, "someId");
+        WalletTransaction walletTransaction = new WalletTransaction("something", 1L, null, 1d);
         Assertions.assertThrows(InvalidTransactionException.class, () -> {
             walletTransaction.execute();
         }, "This is an invalid transaction");
     }
 
     @Test
-    // TODO: there is no place to set amount, could be a bug
     void assert_exception_when_amount_below_zero() {
-        WalletTransaction walletTransaction = new WalletTransaction("something", 1L, 1L, 1L, "someId");
-        TestUtil.setValue(walletTransaction, "amount", -2d);
+        WalletTransaction walletTransaction = new WalletTransaction("something", 1L, 1L, -2d);
         Assertions.assertThrows(InvalidTransactionException.class, () -> {
             walletTransaction.execute();
         }, "This is an invalid transaction");
@@ -38,8 +36,7 @@ class WalletTransactionExecuteTest {
 
     @Test
     void should_return_true_when_status_is_executed() throws InvalidTransactionException {
-        WalletTransaction walletTransaction = new WalletTransaction("something", 1L, 1L, 1L, "someId");
-        TestUtil.setValue(walletTransaction, "amount", 2d);
+        WalletTransaction walletTransaction = new WalletTransaction("something", 1L, 1L, 2d);
         TestUtil.setValue(walletTransaction, "status", STATUS.EXECUTED);
         assertTrue(walletTransaction.execute());
     }
