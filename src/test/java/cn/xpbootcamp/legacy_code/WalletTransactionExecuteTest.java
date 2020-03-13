@@ -40,4 +40,54 @@ class WalletTransactionExecuteTest {
         TestUtil.setValue(walletTransaction, "status", STATUS.EXECUTED);
         assertTrue(walletTransaction.execute());
     }
+
+    @Test
+    void should_return_false_if_not_locked() throws InvalidTransactionException {
+        MockWalletTransaction walletTransaction = new MockWalletTransaction("something", 1L, 1L, 1d);
+        walletTransaction.setLocked(false);
+        assertFalse(walletTransaction.execute());
+    }
+
+    @Test
+    void should_return_false_if_20_days_ago() throws InvalidTransactionException {
+        long current = System.currentTimeMillis();
+        MockWalletTransaction walletTransaction = new MockWalletTransaction("something", 1L, 1L, 1d);
+        long duration = 20 * 24 * 3600 * 1000 + 5000; // 20days and 5 sec
+        walletTransaction.setCurrentTimeMillis(current + duration);
+        walletTransaction.setLocked(true);
+        assertFalse(walletTransaction.execute());
+    }
+
+    private class MockWalletTransaction extends WalletTransaction{
+
+        private boolean isLocked;
+        private long currentTimeMillis;
+
+        public MockWalletTransaction(String preAssignedId, Long buyerId, Long sellerId, Double amount) {
+            super(preAssignedId, buyerId, sellerId, amount);
+        }
+
+        @Override
+        protected boolean lock(String id) {
+            return isLocked;
+        }
+
+        @Override
+        protected long getCurrentTimeMillis() {
+            return currentTimeMillis;
+        }
+
+        @Override
+        protected void unlock() {
+            // do nothing
+        }
+
+        public void setLocked(boolean locked) {
+            isLocked = locked;
+        }
+
+        public void setCurrentTimeMillis(long currentTimeMillis) {
+            this.currentTimeMillis = currentTimeMillis;
+        }
+    }
 }
