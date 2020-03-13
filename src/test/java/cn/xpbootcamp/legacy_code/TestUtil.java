@@ -1,11 +1,12 @@
 package cn.xpbootcamp.legacy_code;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestUtil {
-    public static Object getValue(Object instance, String fieldName) {
+    static Object getValue(Object instance, String fieldName) {
 
         Field field = null;
         try {
@@ -22,5 +23,21 @@ public class TestUtil {
 
         fail();
         return "any";
+    }
+
+    static void setValue(Object instance, String fieldName, Object value) {
+
+        Field field = null;
+        try {
+            field = instance.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(instance, value);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+            fail("No such field: " + fieldName + " in " + instance.getClass().getSimpleName());
+        }
     }
 }
