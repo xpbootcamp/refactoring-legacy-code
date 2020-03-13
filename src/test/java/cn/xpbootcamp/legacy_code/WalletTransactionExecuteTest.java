@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import javax.transaction.InvalidTransactionException;
 
+import java.lang.reflect.Field;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class WalletTransactionExecuteTest {
@@ -55,7 +57,9 @@ class WalletTransactionExecuteTest {
         long duration = 20 * 24 * 3600 * 1000 + 5000; // 20days and 5 sec
         walletTransaction.setCurrentTimeMillis(current + duration);
         walletTransaction.setLocked(true);
+
         assertFalse(walletTransaction.execute());
+        assertEquals(STATUS.EXPIRED, walletTransaction.getStatus());
     }
 
     private class MockWalletTransaction extends WalletTransaction{
@@ -88,6 +92,11 @@ class WalletTransactionExecuteTest {
 
         public void setCurrentTimeMillis(long currentTimeMillis) {
             this.currentTimeMillis = currentTimeMillis;
+        }
+
+        public STATUS getStatus() {
+            Field field = TestUtil.getField(this.getClass().getSuperclass(), "status");
+            return (STATUS) TestUtil.getValue(this, field);
         }
     }
 }
