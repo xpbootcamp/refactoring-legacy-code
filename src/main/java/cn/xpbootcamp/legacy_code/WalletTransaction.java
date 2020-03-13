@@ -15,6 +15,7 @@ public class WalletTransaction {
     private Long createdTimestamp;
     private Double amount;
     private STATUS status;
+    private WalletService walletService;
 
     public WalletTransaction(String preAssignedId, Long buyerId, Long sellerId, Double amount) {
         if (preAssignedId != null && !preAssignedId.isEmpty()) {
@@ -30,6 +31,10 @@ public class WalletTransaction {
         this.amount = amount;
         this.status = STATUS.TO_BE_EXECUTED;
         this.createdTimestamp = System.currentTimeMillis();
+    }
+
+    public void setWalletService(WalletService walletService) {
+        this.walletService = walletService;
     }
 
     public boolean execute() throws InvalidTransactionException {
@@ -52,7 +57,6 @@ public class WalletTransaction {
                 this.status = STATUS.EXPIRED;
                 return false;
             }
-            WalletService walletService = new WalletServiceImpl();
             String walletTransactionId = walletService.moveMoney(id, buyerId, sellerId, amount);
             if (walletTransactionId != null) {
                 this.status = STATUS.EXECUTED;
