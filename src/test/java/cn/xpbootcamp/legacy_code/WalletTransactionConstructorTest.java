@@ -15,11 +15,11 @@ public class WalletTransactionConstructorTest {
     }
 
     @Test
-    // TODO: to check if it is a bug: should_generate_id_and_prefix_with_t_when_no_id_provide
     public void should_be_t_underline_and_when_preAssignedId_is_empty() {
         WalletTransaction walletTransaction = new WalletTransaction("", 1L, 1L, 1d);
         Object id = TestUtil.getValue(walletTransaction, "id");
-        assertEquals("t_", id);
+        assertTrue(id.toString().startsWith("t_"));
+        assertTrue(id.toString().length() > 2);
     }
 
     @Test
@@ -27,7 +27,8 @@ public class WalletTransactionConstructorTest {
     public void should_be_t_null_and_when_preAssignedId_is_null() {
         WalletTransaction walletTransaction = new WalletTransaction(null, 1L, 1L, 1d);
         Object id = TestUtil.getValue(walletTransaction, "id");
-        assertEquals("t_null", id);
+        assertTrue(id.toString().startsWith("t_"));
+        assertTrue(id.toString().length() > 2);
     }
 
     @Test

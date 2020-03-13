@@ -2,7 +2,6 @@ package cn.xpbootcamp.legacy_code;
 
 import cn.xpbootcamp.legacy_code.enums.STATUS;
 import cn.xpbootcamp.legacy_code.service.WalletService;
-import cn.xpbootcamp.legacy_code.service.WalletServiceImpl;
 import cn.xpbootcamp.legacy_code.utils.IdGenerator;
 import cn.xpbootcamp.legacy_code.utils.RedisDistributedLock;
 
@@ -24,7 +23,7 @@ public class WalletTransaction {
             this.id = IdGenerator.generateTransactionId();
         }
         if (!this.id.startsWith("t_")) {
-            this.id = "t_" + preAssignedId;
+            this.id = "t_" + this.id;
         }
         this.buyerId = buyerId;
         this.sellerId = sellerId;
